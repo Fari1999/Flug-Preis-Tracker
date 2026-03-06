@@ -23,7 +23,7 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Run scraper
+      - name: Run scrapper
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: python scraper.py
