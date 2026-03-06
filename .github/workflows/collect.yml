@@ -26,4 +26,4 @@ jobs:
       - name: Run scrapper
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
-        run: python scraper.py
+        run: python scrapper.py
