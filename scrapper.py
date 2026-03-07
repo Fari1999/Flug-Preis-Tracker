@@ -1,7 +1,12 @@
 import requests
 import psycopg2
 import os
-from datetime import date, timedelta   # Für Datumsoperationen (Tage addieren)
+from datetime import date, timedelta
+
+DATABASE_URL = os.environ["DATABASE_URL"]
+
+conn = psycopg2.connect(DATABASE_URL)
+cur = conn.cursor()
 
 
 DATABASE_URL = os.environ["DATABASE_URL"]
@@ -18,18 +23,15 @@ DB_NAME = "flight_prices.db"      # Name der SQLite Datenbankdatei
 url = "https://services-api.ryanair.com/farfnd/3/oneWayFares"
 
 
-conn = psycopg2.connect(DATABASE_URL)
-cur = conn.cursor()
-
 # Tabelle erstellen falls sie noch nicht existiert
 cur.execute("""
 CREATE TABLE IF NOT EXISTS flight_prices (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,   -- automatische ID
-    origin TEXT,                            -- Abflugflughafen
-    destination TEXT,                       -- Zielflughafen
-    flight_date TEXT,                       -- Datum des Fluges
-    price REAL,                             -- Preis des Fluges
-    check_date TEXT                         -- Datum wann wir den Preis abgefragt haben
+    id SERIAL PRIMARY KEY,
+    origin TEXT,
+    destination TEXT,
+    flight_date DATE,
+    price REAL,
+    check_date DATE
 )
 """)
 
