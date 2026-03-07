@@ -1,7 +1,8 @@
 import requests
 import psycopg2
 import os
-from datetime import datetime
+from datetime import date, timedelta   # Für Datumsoperationen (Tage addieren)
+
 
 DATABASE_URL = os.environ["DATABASE_URL"]
 
