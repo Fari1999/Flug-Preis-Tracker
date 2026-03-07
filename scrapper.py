@@ -23,7 +23,7 @@ cur.execute("""
 INSERT INTO flight_prices
 (origin, destination, price, collected_at)
 VALUES (%s,%s,%s,%s)
-""", ("NRN", "NDR", 50, datetime.now()))
+""", ("NRN", "NDR", 100, datetime.now()))
 
 conn.commit()
 
