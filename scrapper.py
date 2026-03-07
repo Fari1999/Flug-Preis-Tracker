@@ -8,16 +8,12 @@ DATABASE_URL = os.environ["DATABASE_URL"]
 conn = psycopg2.connect(DATABASE_URL)
 cur = conn.cursor()
 
-
-DATABASE_URL = os.environ["DATABASE_URL"]
-
 START_DATE = date(2026, 6, 1)     # Startdatum der Flüge die wir abfragen wollen
 END_DATE   = date(2026, 8, 31)    # Enddatum der Flüge
 
 ORIGIN = "NRN"                    # Startflughafen: Düsseldorf Weeze
 DESTINATIONS = ["NDR", "OUD"]     # Ziel-Flughäfen: Nador und Oujda
 
-DB_NAME = "flight_prices.db"      # Name der SQLite Datenbankdatei
 
 # URL der Flugpreis API von Ryanair
 url = "https://services-api.ryanair.com/farfnd/3/oneWayFares"
@@ -78,11 +74,11 @@ while current <= END_DATE:
                     flight_date = flight["outbound"]["departureDate"]
 
                     # Datensatz in Datenbank speichern
-                    cur.execute("""
-                    INSERT INTO flight_prices
-                    (origin, destination, flight_date, price, check_date)
-                    VALUES (?, ?, ?, ?, ?)
-                    """, (ORIGIN, DEST, flight_date, price, today))
+                   cur.execute("""
+                   INSERT INTO flight_prices
+                   (origin, destination, flight_date, price, check_date)
+                    VALUES (%s, %s, %s, %s, %s)
+                   """, (ORIGIN, DEST, flight_date, price, today))
 
                     # Ausgabe im Terminal
                     print(f"{flight_date} {ORIGIN}->{DEST} : {price} €")
