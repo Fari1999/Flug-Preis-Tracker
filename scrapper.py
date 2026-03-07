@@ -74,7 +74,7 @@ while current <= END_DATE:
                     flight_date = flight["outbound"]["departureDate"]
 
                     # Datensatz in Datenbank speichern
-                   cur.execute(""",
+                   cur.execute("""
                    INSERT INTO flight_prices
                    (origin, destination, flight_date, price, check_date)
                     VALUES (%s, %s, %s, %s, %s)
