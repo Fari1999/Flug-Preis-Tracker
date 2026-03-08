@@ -1,11 +1,16 @@
-fetch("../cheapest_flight.json")
+fetch("cheapest_flight.json")
 .then(response => response.json())
 .then(data => {
 
 document.getElementById("flight").innerHTML = `
-Route: ${data.origin} → ${data.destination} <br>
-Date: ${data.date} <br>
-Price: €${data.price}
+Origin: ${data.origin} <br>
+Destination: ${data.destination} <br>
+Flight date: ${data.flight_date} <br>
+Price: €${data.price} <br>
+Check date: ${data.check_date}
 `
 
+})
+.catch(error => {
+console.log("Error loading JSON:", error)
 })
