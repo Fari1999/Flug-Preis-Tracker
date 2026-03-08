@@ -2,40 +2,36 @@ import os
 import psycopg2
 import json
 
-# Database URL aus GitHub Secrets oder Environment
-DATABASE_URL = os.environ["DATABASE_URL"]
+DATABASE_URL = os.environ.get("DATABASE_URL")
 
-# Verbindung zur Neon Datenbank
+if not DATABASE_URL:
+    print("DATABASE_URL not found")
+    exit()
+
 conn = psycopg2.connect(DATABASE_URL)
 cur = conn.cursor()
 
-# günstigsten Flug finden
 cur.execute("""
-SELECT origin, destination, flight_date, price
+SELECT *
 FROM flight_prices
 ORDER BY price ASC
 LIMIT 1
 """)
 
-result = cur.fetchone()
+row = cur.fetchone()
 
-if result:
+if row is None:
+    print("No data in database")
+    exit()
 
-    data = {
-        "origin": result[0],
-        "destination": result[1],
-        "date": str(result[2]),
-        "price": result[3]
-    }
+columns = [desc[0] for desc in cur.description]
 
-    # JSON Datei speichern
-    with open("cheapest_flight.json", "w") as f:
-        json.dump(data, f, indent=4)
+data = dict(zip(columns, row))
 
-    print("Cheapest flight saved")
+with open("cheapest_flight.json", "w") as f:
+    json.dump(data, f, indent=4, default=str)
 
-else:
-    print("No data found")
+print("cheapest_flight.json created successfully")
 
 cur.close()
 conn.close()
