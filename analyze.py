@@ -1,37 +1,82 @@
-import os
 import psycopg2
 import json
+import os
 
 DATABASE_URL = os.environ.get("DATABASE_URL")
-
-if not DATABASE_URL:
-    print("DATABASE_URL not found")
-    exit()
 
 conn = psycopg2.connect(DATABASE_URL)
 cur = conn.cursor()
 
+# billigster Flug insgesamt
 cur.execute("""
-SELECT *
-FROM flight_prices
+SELECT * 
+FROM flights
 ORDER BY price ASC
 LIMIT 1
 """)
 
-row = cur.fetchone()
-
-if row is None:
-    print("No data in database")
-    exit()
-
+cheapest_overall = cur.fetchone()
 columns = [desc[0] for desc in cur.description]
+cheapest_overall = dict(zip(columns, cheapest_overall))
 
-data = dict(zip(columns, row))
+# aktuellstes Datum
+cur.execute("""
+SELECT MAX(scrape_date)
+FROM flights
+""")
 
-with open("cheapest_flight.json", "w") as f:
-    json.dump(data, f, indent=4, default=str)
+latest_date = cur.fetchone()[0]
 
-print("cheapest_flight.json created successfully")
+# billigster Flug vom aktuellsten Datum
+cur.execute("""
+SELECT *
+FROM flights
+WHERE scrape_date = %s
+ORDER BY price ASC
+LIMIT 1
+""", (latest_date,))
+
+cheapest_latest = dict(zip(columns, cur.fetchone()))
+
+# Top 10 vom aktuellsten Datum
+cur.execute("""
+SELECT *
+FROM flights
+WHERE scrape_date = %s
+ORDER BY price ASC
+LIMIT 10
+""", (latest_date,))
+
+rows = cur.fetchall()
+top10 = [dict(zip(columns, r)) for r in rows]
+
+# Graph Daten (letzte 3 Monate)
+cur.execute("""
+SELECT flight_date, price
+FROM flights
+WHERE scrape_date >= NOW() - INTERVAL '3 months'
+ORDER BY flight_date
+""")
+
+rows = cur.fetchall()
+
+graph_dates = [str(r[0]) for r in rows]
+graph_prices = [r[1] for r in rows]
+
+data = {
+    "cheapest_overall": cheapest_overall,
+    "cheapest_latest": cheapest_latest,
+    "top10_latest": top10,
+    "graph": {
+        "dates": graph_dates,
+        "prices": graph_prices
+    }
+}
+
+os.makedirs("website", exist_ok=True)
+
+with open("website/flights_data.json", "w") as f:
+    json.dump(data, f)
 
 cur.close()
 conn.close()
