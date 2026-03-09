@@ -1,5 +1,8 @@
 name: Update Flight Data
 
+permissions:
+  contents: write
+
 on:
   schedule:
     - cron: "0 * * * *"   # läuft jede Stunde
