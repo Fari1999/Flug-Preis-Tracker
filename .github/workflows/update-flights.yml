@@ -31,6 +31,6 @@ jobs:
         run: |
           git config --global user.name "github-actions"
           git config --global user.email "actions@github.com"
-          git add website/data.json
+          git add cheapest_flight.json
           git commit -m "Update flight data" || echo "No changes"
           git push
