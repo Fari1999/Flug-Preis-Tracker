@@ -103,7 +103,7 @@ data = {
 # 7️⃣ JSON speichern
 # -----------------------------
 with open("cheapest_flight.json", "w") as f:
-    json.dump(data, f, indent=2)
+     json.dump(data, f, indent=2, default=str)
 
 print("✅ cheapest_flight.json erfolgreich erstellt")
 
