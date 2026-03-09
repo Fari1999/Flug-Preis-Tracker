@@ -10,7 +10,7 @@ cur = conn.cursor()
 # billigster Flug insgesamt
 cur.execute("""
 SELECT * 
-FROM flights
+FROM flight_prices
 ORDER BY price ASC
 LIMIT 1
 """)
@@ -22,7 +22,7 @@ cheapest_overall = dict(zip(columns, cheapest_overall))
 # aktuellstes Datum
 cur.execute("""
 SELECT MAX(scrape_date)
-FROM flights
+FROM flight_prices
 """)
 
 latest_date = cur.fetchone()[0]
@@ -30,7 +30,7 @@ latest_date = cur.fetchone()[0]
 # billigster Flug vom aktuellsten Datum
 cur.execute("""
 SELECT *
-FROM flights
+FROM flight_prices
 WHERE scrape_date = %s
 ORDER BY price ASC
 LIMIT 1
@@ -41,7 +41,7 @@ cheapest_latest = dict(zip(columns, cur.fetchone()))
 # Top 10 vom aktuellsten Datum
 cur.execute("""
 SELECT *
-FROM flights
+FROM flight_prices
 WHERE scrape_date = %s
 ORDER BY price ASC
 LIMIT 10
@@ -53,7 +53,7 @@ top10 = [dict(zip(columns, r)) for r in rows]
 # Graph Daten (letzte 3 Monate)
 cur.execute("""
 SELECT flight_date, price
-FROM flights
+FROM flight_prices
 WHERE scrape_date >= NOW() - INTERVAL '3 months'
 ORDER BY flight_date
 """)
@@ -75,7 +75,7 @@ data = {
 
 os.makedirs("website", exist_ok=True)
 
-with open("website/flights_data.json", "w") as f:
+with open("cheapest_flight.json", "w") as f:
     json.dump(data, f)
 
 cur.close()
