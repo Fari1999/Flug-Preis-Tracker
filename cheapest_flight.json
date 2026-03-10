@@ -1,11 +1,11 @@
 {
   "cheapest_overall": {
-    "id": 1000,
-    "origin": "Test",
-    "destination": "Test",
-    "flight_date": "2026-01-01",
-    "price": 10.0,
-    "check_date": "2026-01-01"
+    "id": 88,
+    "origin": "NRN",
+    "destination": "NDR",
+    "flight_date": "2026-08-27",
+    "price": 26.99,
+    "check_date": "2026-03-07"
   },
   "cheapest_latest": {
     "id": 274,
