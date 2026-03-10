@@ -95,12 +95,14 @@ let l = data.cheapest_latest
 
 document.getElementById("overall").innerHTML =
 o.origin + " → " + o.destination + "<br>" +
-"Date: " + o.flight_date + "<br>" +
+"Flug Datum: " + o.flight_date + "<br>" +
+"Check Datum: " + o.check_date + "<br>" +  
 "Price: €" + o.price
 
 document.getElementById("latest").innerHTML =
 l.origin + " → " + l.destination + "<br>" +
-"Date: " + l.flight_date + "<br>" +
+"Flug Datum: " + l.flight_date + "<br>" +
+"Check Datum: " + l.check_date + "<br>" +
 "Price: €" + l.price
 
 let list = document.getElementById("top10")
@@ -111,7 +113,8 @@ let li = document.createElement("li")
 
 li.textContent =
 f.origin + " → " + f.destination +
-" | " + f.flight_date +
+" | Flight: " + f.flight_date +
+" | Checked: " + f.check_date +
 " | €" + f.price
 
 list.appendChild(li)
