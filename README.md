@@ -1,4 +1,5 @@
 # Flug-Preis-Tracker
+```
 │
 ├── index.html
 │   # Hauptseite der Website
@@ -78,3 +79,4 @@
             # 4. analyze.py ausführen
             # 5. cheapest_flight.json aktualisieren
             # 6. Änderungen committen und pushen
+```
