@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
 
 <title>Flight Price Tracker</title>
@@ -19,13 +20,14 @@ text-align:center;
 }
 
 .container{
-max-width:900px;
+max-width:1000px;
 margin:auto;
 }
 
 .cards{
 display:flex;
 gap:20px;
+flex-wrap:wrap;
 }
 
 .card{
@@ -34,6 +36,7 @@ padding:20px;
 border-radius:10px;
 box-shadow:0 4px 10px rgba(0,0,0,0.1);
 flex:1;
+min-width:250px;
 }
 
 ul{
@@ -48,6 +51,7 @@ background:white;
 padding:20px;
 border-radius:10px;
 box-shadow:0 4px 10px rgba(0,0,0,0.1);
+margin-top:20px;
 }
 
 </style>
@@ -68,82 +72,117 @@ box-shadow:0 4px 10px rgba(0,0,0,0.1);
 </div>
 
 <div class="card">
-<h3>Cheapest Latest Flight</h3>
-<p id="latest"></p>
+<h3>Cheapest Outbound Flight</h3>
+<p id="outbound"></p>
+</div>
+
+<div class="card">
+<h3>Cheapest Return Flight</h3>
+<p id="return"></p>
 </div>
 
 </div>
 
-<h2>Top 10 Cheapest (Latest Scan)</h2>
+<h2>Top 10 Cheapest Return Flights</h2>
 
-<ul id="top10"></ul>
+<ul id="top10returns"></ul>
 
-<h2>Price Trend (Last 3 Months)</h2>
+<h2>Price Graphs (1 Year)</h2>
 
-<canvas id="chart"></canvas>
+<h3>NRN → NDR</h3>
+<canvas id="chart1"></canvas>
+
+<h3>NRN → OUD</h3>
+<canvas id="chart2"></canvas>
+
+<h3>NDR → NRN</h3>
+<canvas id="chart3"></canvas>
+
+<h3>OUD → NRN</h3>
+<canvas id="chart4"></canvas>
 
 </div>
 
 <script>
 
 fetch("cheapest_flight.json")
+
 .then(r => r.json())
+
 .then(data => {
 
+// -----------------------------
+// Karten anzeigen
+// -----------------------------
+
 let o = data.cheapest_overall
-let l = data.cheapest_latest
+let out = data.cheapest_outbound
+let ret = data.cheapest_return
 
 document.getElementById("overall").innerHTML =
 o.origin + " → " + o.destination + "<br>" +
-"Flug Datum: " + o.flight_date + "<br>" +
-"Check Datum: " + o.check_date + "<br>" +  
+"Flight: " + o.flight_date + "<br>" +
 "Price: €" + o.price
 
-document.getElementById("latest").innerHTML =
-l.origin + " → " + l.destination + "<br>" +
-"Flug Datum: " + l.flight_date + "<br>" +
-"Check Datum: " + l.check_date + "<br>" +
-"Price: €" + l.price
+document.getElementById("outbound").innerHTML =
+out.origin + " → " + out.destination + "<br>" +
+"Flight: " + out.flight_date + "<br>" +
+"Price: €" + out.price
 
-let list = document.getElementById("top10")
+document.getElementById("return").innerHTML =
+ret.origin + " → " + ret.destination + "<br>" +
+"Flight: " + ret.flight_date + "<br>" +
+"Price: €" + ret.price
 
-data.top10_latest.forEach(f => {
+// -----------------------------
+// Top 10 Rückflüge
+// -----------------------------
+
+let list = document.getElementById("top10returns")
+
+data.top10_returns.forEach(f => {
 
 let li = document.createElement("li")
 
 li.textContent =
 f.origin + " → " + f.destination +
-" | Flight: " + f.flight_date +
-" | Checked: " + f.check_date +
+" | " + f.flight_date +
 " | €" + f.price
 
 list.appendChild(li)
 
 })
 
-const ctx = document.getElementById("chart")
+// -----------------------------
+// Graphen erstellen
+// -----------------------------
 
-new Chart(ctx, {
+function makeChart(id, graph, label){
 
-type: "line",
+new Chart(document.getElementById(id),{
 
-data: {
+type:"line",
 
-labels: data.graph.dates,
+data:{
 
-datasets: [{
+labels:graph.dates,
 
-label: "Flight Price",
-
-data: data.graph.prices,
-
+datasets:[{
+label:label,
+data:graph.prices,
 borderWidth:2
-
 }]
 
 }
 
 })
+
+}
+
+makeChart("chart1",data.graphs.nrn_ndr,"NRN → NDR")
+makeChart("chart2",data.graphs.nrn_oud,"NRN → OUD")
+makeChart("chart3",data.graphs.ndr_nrn,"NDR → NRN")
+makeChart("chart4",data.graphs.oud_nrn,"OUD → NRN")
 
 })
 
