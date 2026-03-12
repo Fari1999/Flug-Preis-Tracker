@@ -8,6 +8,10 @@ DATABASE_URL = os.environ["DATABASE_URL"]
 conn = psycopg2.connect(DATABASE_URL)
 cur = conn.cursor()
 
+# Alte Daten löschen
+cur.execute("DELETE FROM flight_prices")
+conn.commit()
+
 START_DATE = date(2026, 6, 1)
 END_DATE = date(2026, 8, 31)
 
