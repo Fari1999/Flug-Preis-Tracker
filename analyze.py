@@ -1,17 +1,179 @@
 import psycopg2
 import json
 import os
+import smtplib
+
+from datetime import date, timedelta
+from email.mime.text import MIMEText
 
 # -----------------------------
-# Verbindung zur Neon/Postgres DB
+# Verbindung zur Neon/Postgres DB, Secrets laden
 # -----------------------------
 DATABASE_URL = os.environ.get("DATABASE_URL")
+
+EMAIL_USER = os.environ.get("EMAIL_USER")
+EMAIL_PASS = os.environ.get("EMAIL_PASS")
+ALERT_EMAIL = os.environ.get("ALERT_EMAIL")
 
 if not DATABASE_URL:
     raise ValueError("DATABASE_URL nicht gesetzt")
 
+# --------------------------------------------------
+#  Email Funktion
+# sendet eine Email wenn eine Bedingung erfüllt ist
+# --------------------------------------------------
+
+def send_email(subject, message):
+
+    # Falls Email Secrets fehlen → keine Email
+    if not EMAIL_USER or not EMAIL_PASS or not ALERT_EMAIL:
+        print("Email Secrets fehlen")
+        return
+
+    msg = MIMEText(message)
+
+    msg["Subject"] = subject
+    msg["From"] = EMAIL_USER
+    msg["To"] = ALERT_EMAIL
+
+    try:
+
+        server = smtplib.SMTP("smtp.gmail.com", 587)
+
+        server.starttls()
+
+        server.login(EMAIL_USER, EMAIL_PASS)
+
+        server.sendmail(
+            EMAIL_USER,
+            ALERT_EMAIL,
+            msg.as_string()
+        )
+
+        server.quit()
+
+        print("✅ Email gesendet")
+
+    except Exception as e:
+
+        print("Email Fehler:", e)
+
+
+# --------------------------------------------------
+#   Verbindung zur Datenbank
+# --------------------------------------------------
+
 conn = psycopg2.connect(DATABASE_URL)
 cur = conn.cursor()
+
+# --------------------------------------------------
+#  Zeitraum für nächsten Monat berechnen
+# Beispiel:
+# Heute: 16 März
+# → prüft nur Flüge von 1 April bis 30 April
+# --------------------------------------------------
+
+today = date.today()
+
+# erster Tag vom nächsten Monat
+next_month_start = (today.replace(day=1) + timedelta(days=32)).replace(day=1)
+
+# letzter Tag vom nächsten Monat
+next_month_end = (next_month_start + timedelta(days=32)).replace(day=1) - timedelta(days=1)
+
+# --------------------------------------------------
+#  Billigster Hinflug im nächsten Monat
+# --------------------------------------------------
+
+cur.execute("""
+SELECT *
+FROM flight_prices
+WHERE origin = 'NRN'
+AND flight_date BETWEEN %s AND %s
+ORDER BY price ASC
+LIMIT 1
+""", (next_month_start, next_month_end))
+
+row = cur.fetchone()
+
+cheapest_outbound = None
+
+if row:
+
+    cheapest_outbound = dict(zip(columns, row))
+
+    cheapest_outbound["flight_date"] = cheapest_outbound["flight_date"].isoformat()
+    cheapest_outbound["check_date"] = cheapest_outbound["check_date"].isoformat()
+
+    # --------------------------------------------------
+    # Email senden wenn Hinflug unter 30€
+    # --------------------------------------------------
+
+    if cheapest_outbound["price"] < 30:
+
+        message = f"""
+Cheap Flight Alert!
+
+Route: {cheapest_outbound['origin']} → {cheapest_outbound['destination']}
+Date: {cheapest_outbound['flight_date']}
+Price: €{cheapest_outbound['price']}
+"""
+
+        send_email(
+            "Cheap Flight Found!",
+            message
+        )
+
+# --------------------------------------------------
+#  Billigste komplette Reise
+# Hinflug + Rückflug innerhalb 7 Tage
+# nur im nächsten Monat
+# --------------------------------------------------
+
+cur.execute("""
+SELECT
+o.flight_date,
+r.flight_date,
+o.price + r.price as total
+FROM flight_prices o
+JOIN flight_prices r
+ON r.origin = o.destination
+AND r.destination = o.origin
+AND r.flight_date BETWEEN o.flight_date
+AND o.flight_date + INTERVAL '7 days'
+WHERE o.flight_date BETWEEN %s AND %s
+ORDER BY total ASC
+LIMIT 1
+""", (next_month_start, next_month_end))
+
+trip = cur.fetchone()
+
+if trip:
+
+    outbound_date = trip[0]
+    return_date = trip[1]
+    total_price = trip[2]
+
+    # --------------------------------------------------
+    # Email wenn komplette Reise unter 50€
+    # --------------------------------------------------
+
+    if total_price < 50:
+
+        message = f"""
+Cheap Trip Found!
+
+Outbound: {outbound_date}
+Return: {return_date}
+
+Total Price: €{total_price}
+"""
+
+        send_email(
+            "Cheap Trip Alert!",
+            message
+        )
+
 
 # -----------------------------
 # 1️⃣ Billigster Flug insgesamt
