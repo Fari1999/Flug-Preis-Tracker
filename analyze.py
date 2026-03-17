@@ -274,10 +274,10 @@ for r in rows:
 def build_graph(origin, destination):
 
     cur.execute("""
-        SELECT flight_date, price
-        FROM flight_prices
-        WHERE origin = %s AND destination = %s
-        ORDER BY flight_date
+    SELECT flight_date, price
+    FROM flight_prices
+    WHERE origin = %s AND destination = %s
+    ORDER BY flight_date
     """, (origin, destination))
 
     rows = cur.fetchall()
