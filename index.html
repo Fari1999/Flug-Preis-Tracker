@@ -67,38 +67,35 @@ margin-top:20px;
 <div class="cards">
 
 <div class="card">
-<h3>Cheapest Flight Ever</h3>
-<p id="overall"></p>
-</div>
-
-<div class="card">
-<h3>Cheapest Outbound Flight</h3>
+<h3>Billigster Hinflug</h3>
 <p id="outbound"></p>
 </div>
 
 <div class="card">
-<h3>Cheapest Return Flight</h3>
+<h3>Billigster Rückflug</h3>
 <p id="return"></p>
 </div>
 
 </div>
 
-<h2>Top 10 Cheapest Return Flights</h2>
-
+<h2>Top 10 Billigste Hinflüge</h2>
+<ul id="top10outbound"></ul>
+  
+<h2>Top 10 Billigste Rückflüge</h2>
 <ul id="top10returns"></ul>
 
 <h2>Price Graphs (1 Year)</h2>
 
-<h3>NRN → NDR</h3>
+<h3>Weeze → Nador</h3>
 <canvas id="chart1"></canvas>
 
-<h3>NRN → OUD</h3>
+<h3>Weeze → Oujda</h3>
 <canvas id="chart2"></canvas>
 
-<h3>NDR → NRN</h3>
+<h3>Nador → Weeze</h3>
 <canvas id="chart3"></canvas>
 
-<h3>OUD → NRN</h3>
+<h3>Oujda → Weeze</h3>
 <canvas id="chart4"></canvas>
 
 </div>
@@ -115,14 +112,9 @@ fetch("cheapest_flight.json")
 // Karten anzeigen
 // -----------------------------
 
-let o = data.cheapest_overall
+
 let out = data.cheapest_outbound
 let ret = data.cheapest_return
-
-document.getElementById("overall").innerHTML =
-o.origin + " → " + o.destination + "<br>" +
-"Flight: " + o.flight_date + "<br>" +
-"Price: €" + o.price
 
 document.getElementById("outbound").innerHTML =
 out.origin + " → " + out.destination + "<br>" +
@@ -133,6 +125,25 @@ document.getElementById("return").innerHTML =
 ret.origin + " → " + ret.destination + "<br>" +
 "Flight: " + ret.flight_date + "<br>" +
 "Price: €" + ret.price
+
+// -----------------------------
+// Top 10 Hinflüge
+// -----------------------------
+
+let listOut = document.getElementById("top10outbound")
+
+data.top10_outbound.forEach(f => {
+
+let li = document.createElement("li")
+
+li.textContent =
+f.origin + " → " + f.destination +
+" | " + f.flight_date +
+" | €" + f.price
+
+listOut.appendChild(li)
+
+})  
 
 // -----------------------------
 // Top 10 Rückflüge
