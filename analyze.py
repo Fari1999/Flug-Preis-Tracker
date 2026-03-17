@@ -187,27 +187,7 @@ Total Price: €{total_price}
 
 
 # -----------------------------
-# 1️⃣ Billigster Flug insgesamt
-# -----------------------------
-cur.execute("""
-SELECT *
-FROM flight_prices
-ORDER BY price ASC
-LIMIT 1
-""")
-
-cheapest_overall_row = cur.fetchone()
-columns = [desc[0] for desc in cur.description]
-
-cheapest_overall = None
-
-if cheapest_overall_row:
-    cheapest_overall = dict(zip(columns, cheapest_overall_row))
-    cheapest_overall["flight_date"] = cheapest_overall["flight_date"].isoformat()
-    cheapest_overall["check_date"] = cheapest_overall["check_date"].isoformat()
-
-# -----------------------------
-# 2️⃣ Billigster Hinflug (NRN → *)
+#  Billigster Hinflug (NRN → *)
 # -----------------------------
 cur.execute("""
 SELECT *
@@ -224,7 +204,7 @@ cheapest_outbound["flight_date"] = cheapest_outbound["flight_date"].isoformat()
 cheapest_outbound["check_date"] = cheapest_outbound["check_date"].isoformat()
 
 # -----------------------------
-# 3️⃣ Billigster Rückflug (* → NRN)
+#  Billigster Rückflug (* → NRN)
 # -----------------------------
 cur.execute("""
 SELECT *
@@ -241,9 +221,30 @@ cheapest_return["flight_date"] = cheapest_return["flight_date"].isoformat()
 cheapest_return["check_date"] = cheapest_return["check_date"].isoformat()
 
 # -----------------------------
-# 4️⃣ Top 10 billigste Rückflüge
+# Top 10 billigste Hinflüge
 # -----------------------------
 cur.execute("""
+SELECT *
+FROM flight_prices
+WHERE origin='NRN'
+ORDER BY price ASC
+LIMIT 10
+""")
+
+rows = cur.fetchall()
+
+top10_outbound = []
+
+for r in rows:
+    d = dict(zip(columns, r))
+    d["flight_date"] = d["flight_date"].isoformat()
+    d["check_date"] = d["check_date"].isoformat()
+    top10_outbound.append(d)
+
+# -----------------------------
+# Top 10 billigste Rückflüge
+# -----------------------------
+   cur.execute("""
 SELECT *
 FROM flight_prices
 WHERE destination='NRN'
@@ -262,7 +263,7 @@ for r in rows:
     top10_returns.append(d)
 
 # -----------------------------
-# 5️⃣ Graph Daten erstellen
+#  Graph Daten erstellen
 # Jeder Graph zeigt Preise über 1 Jahr
 # -----------------------------
 
@@ -290,7 +291,7 @@ graph_ndr_nrn = build_graph("NDR","NRN")
 graph_oud_nrn = build_graph("OUD","NRN")
 
 # -----------------------------
-# 6️⃣ JSON Struktur erstellen
+#  JSON Struktur erstellen
 # -----------------------------
 data = {
 
@@ -310,7 +311,7 @@ data = {
 }
 
 # -----------------------------
-# 7️⃣ JSON speichern
+#  JSON speichern
 # -----------------------------
 with open("cheapest_flight.json","w") as f:
     json.dump(data,f,indent=2)
