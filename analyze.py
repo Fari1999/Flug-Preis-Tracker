@@ -141,21 +141,21 @@ Price: €{cheapest_outbound['price']}
 # nur im nächsten Monat
 # --------------------------------------------------
 
- cur.execute("""
- SELECT *
- o.flight_date,
- r.flight_date,
- o.price + r.price as total
- FROM flight_prices o
- JOIN flight_prices r
- ON r.origin = o.destination
- AND r.destination = o.origin
- AND r.flight_date BETWEEN o.flight_date
- AND o.flight_date + INTERVAL '7 days'
- WHERE o.flight_date BETWEEN %s AND %s
- ORDER BY total ASC
- LIMIT 1
- """, (next_month_start, next_month_end))
+cur.execute("""
+SELECT
+    o.flight_date,
+    r.flight_date,
+    o.price + r.price as total
+FROM flight_prices o
+JOIN flight_prices r
+    ON r.origin = o.destination
+    AND r.destination = o.origin
+    AND r.flight_date BETWEEN o.flight_date
+    AND o.flight_date + INTERVAL '7 days'
+WHERE o.flight_date BETWEEN %s AND %s
+ORDER BY total ASC
+LIMIT 1
+""", (next_month_start, next_month_end))
 
 trip = cur.fetchone()
 
