@@ -66,6 +66,17 @@ def send_email(subject, message):
 conn = psycopg2.connect(DATABASE_URL)
 cur = conn.cursor()
 
+# -----------------------------
+# Spaltennamen der Tabelle holen
+# -----------------------------
+cur.execute("""
+SELECT *
+FROM flight_prices
+LIMIT 1
+""")
+
+columns = [desc[0] for desc in cur.description]
+
 # --------------------------------------------------
 #  Zeitraum für nächsten Monat berechnen
 # Beispiel:
