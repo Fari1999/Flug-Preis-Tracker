@@ -24,6 +24,9 @@ if not DATABASE_URL:
 #  Email Funktion
 # sendet eine Email wenn eine Bedingung erfüllt ist
 # --------------------------------------------------
+print("EMAIL_USER:", EMAIL_USER)
+print("EMAIL_PASS:", "SET" if EMAIL_PASS else None)
+print("ALERT_EMAIL:", ALERT_EMAIL)
 
 def send_email(subject, message):
 
