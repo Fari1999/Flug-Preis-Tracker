@@ -267,11 +267,16 @@ for r in rows:
 # Jeder Graph zeigt Preise über 1 Jahr
 # -----------------------------
 
+# -----------------------------
+# Graph Daten erstellen
+# -----------------------------
+
 def build_graph(origin, destination):
+
     cur.execute("""
         SELECT flight_date, price
         FROM flight_prices
-        WHERE origin=%s AND destination=%s
+        WHERE origin = %s AND destination = %s
         ORDER BY flight_date
     """, (origin, destination))
 
@@ -284,11 +289,11 @@ def build_graph(origin, destination):
 
 
 # Vier Graphen erzeugen
+
 graph_nrn_ndr = build_graph("NRN", "NDR")
 graph_nrn_oud = build_graph("NRN", "OUD")
 graph_ndr_nrn = build_graph("NDR", "NRN")
 graph_oud_nrn = build_graph("OUD", "NRN")
-
 # -----------------------------
 #  JSON Struktur erstellen
 # -----------------------------
