@@ -13,7 +13,9 @@ DATABASE_URL = os.environ.get("DATABASE_URL")
 
 EMAIL_USER = os.environ.get("EMAIL_USER")
 EMAIL_PASS = os.environ.get("EMAIL_PASS")
-ALERT_EMAIL = os.environ.get("ALERT_EMAIL")
+#ALERT_EMAIL = os.environ.get("ALERT_EMAIL")
+ALERT_EMAIL = os.environ.get("farfifa@hotmail.com")
+
 
 if not DATABASE_URL:
     raise ValueError("DATABASE_URL nicht gesetzt")
@@ -120,7 +122,7 @@ if row:
     # Email senden wenn Hinflug unter 30€
     # --------------------------------------------------
 
-    if cheapest_outbound["price"] < 25:
+    if cheapest_outbound["price"] < 50:
 
         message = f"""
 Cheap Flight Alert!
