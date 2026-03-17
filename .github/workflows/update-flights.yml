@@ -28,6 +28,9 @@ jobs:
       - name: Script ausführen
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          EMAIL_USER: ${{ secrets.EMAIL_USER }}
+          EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
+          ALERT_EMAIL: ${{ secrets.ALERT_EMAIL }}
         run: python analyze.py
 
       - name: Änderungen committen
