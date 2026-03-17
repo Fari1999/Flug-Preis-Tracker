@@ -295,12 +295,12 @@ graph_oud_nrn = build_graph("OUD","NRN")
 # -----------------------------
 data = {
 
-"cheapest_overall":cheapest_overall,
 "cheapest_outbound":cheapest_outbound,
 "cheapest_return":cheapest_return,
 
+"top10_outbound":top10_outbound,   # NEU
 "top10_returns":top10_returns,
-
+    
 "graphs":{
 "nrn_ndr":graph_nrn_ndr,
 "nrn_oud":graph_nrn_oud,
