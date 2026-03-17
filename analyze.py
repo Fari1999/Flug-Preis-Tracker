@@ -268,27 +268,26 @@ for r in rows:
 # -----------------------------
 
 def build_graph(origin, destination):
-
     cur.execute("""
-    SELECT flight_date, price
-    FROM flight_prices
-    WHERE origin=%s AND destination=%s
-    ORDER BY flight_date
-    """,(origin,destination))
+        SELECT flight_date, price
+        FROM flight_prices
+        WHERE origin=%s AND destination=%s
+        ORDER BY flight_date
+    """, (origin, destination))
 
     rows = cur.fetchall()
 
     return {
-        "dates":[r[0].isoformat() for r in rows],
-        "prices":[r[1] for r in rows]
+        "dates": [r[0].isoformat() for r in rows],
+        "prices": [r[1] for r in rows]
     }
 
-# Vier Graphen erzeugen
 
-graph_nrn_ndr = build_graph("NRN","NDR")
-graph_nrn_oud = build_graph("NRN","OUD")
-graph_ndr_nrn = build_graph("NDR","NRN")
-graph_oud_nrn = build_graph("OUD","NRN")
+# Vier Graphen erzeugen
+graph_nrn_ndr = build_graph("NRN", "NDR")
+graph_nrn_oud = build_graph("NRN", "OUD")
+graph_ndr_nrn = build_graph("NDR", "NRN")
+graph_oud_nrn = build_graph("OUD", "NRN")
 
 # -----------------------------
 #  JSON Struktur erstellen
