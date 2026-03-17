@@ -142,7 +142,7 @@ Price: €{cheapest_outbound['price']}
 # --------------------------------------------------
 
  cur.execute("""
- SELECT
+ SELECT *
  o.flight_date,
  r.flight_date,
  o.price + r.price as total
