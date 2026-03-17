@@ -5,7 +5,7 @@ permissions:
 
 on:
   schedule:
-    - cron: "0 8,15 * * *"   # läuft zweimal pro Tag
+    - cron: "0 8,16 * * *"   # läuft zweimal pro Tag
   workflow_dispatch:      # erlaubt manuelles Starten
 
 jobs:
