@@ -244,7 +244,7 @@ for r in rows:
 # -----------------------------
 # Top 10 billigste Rückflüge
 # -----------------------------
-   cur.execute("""
+cur.execute("""
 SELECT *
 FROM flight_prices
 WHERE destination='NRN'
