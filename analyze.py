@@ -13,8 +13,8 @@ DATABASE_URL = os.environ.get("DATABASE_URL")
 
 EMAIL_USER = os.environ.get("EMAIL_USER")
 EMAIL_PASS = os.environ.get("EMAIL_PASS")
-#ALERT_EMAIL = os.environ.get("ALERT_EMAIL")
-ALERT_EMAIL = os.environ.get("farfifa@hotmail.com")
+ALERT_EMAIL = os.environ.get("ALERT_EMAIL")
+
 
 
 if not DATABASE_URL:
