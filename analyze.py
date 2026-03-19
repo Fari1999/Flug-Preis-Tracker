@@ -125,7 +125,7 @@ if row:
     # Email senden wenn Hinflug unter 30€
     # --------------------------------------------------
 
-    if cheapest_outbound["price"] < 50:
+    if cheapest_outbound["price"] < 30:
 
         message = f"""
 Cheap Flight Alert!
@@ -174,7 +174,7 @@ if trip:
     # Email wenn komplette Reise unter 50€
     # --------------------------------------------------
 
-    if total_price < 100:
+    if total_price < 50:
 
         message = f"""
 Cheap Trip Found!
